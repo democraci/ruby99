@@ -1,0 +1,1 @@
+#newbie's ruby solution to p99 in https://prof.ti.bfh.ch/hew1/informatik3/prolog/p-99/
