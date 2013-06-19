@@ -1,3 +1,4 @@
+# encoding: UTF-8
 #newbie's ruby solution to p99 in https://prof.ti.bfh.ch/hew1/informatik3/prolog/p-99/
 #
 #author democracyinchina@gmail.com
@@ -35,7 +36,8 @@ raise "kElement method error" unless kElement([1,2,3,4], 2) == 2
 #P04 (*) Find the number of elements of a list.
 def myLength(list)
 	list.length
-	#list.count also works
+  #list.count also works: when Array#count takes no arguments, it works just like Array#length.
+  #list.size also works: Array#size is an alias of Array#length.
 end
 
 raise "myLength method error" unless myLength([1,2,3,4]) == 4
@@ -48,32 +50,31 @@ def myReverse(list)
 	#recursive way
 	#if list.length == 0 then
 	#	[]
-	#else 
+	#else
 	#	#puts "enter stack"
 	#	myReverse(list.drop(1)).push(list[0])
 	#end
 	
-	#or in a effecitve and imperative way
+	#or in an effective and imperative way
 	#[1,2,3,4] [4,2,3,1][4,3,2,1]
 	#[1,2,3,4,5] [5,2,3,4,1] [5,4,3,2,1]
-	i = 0;
+	i = 0
 	while i < list.length/2
 		list[i], list[list.length - i - 1] = list[list.length - i - 1], list[i]
 		i += 1
 	end
-	return list
+	list
 end
 
 raise "myReverse method error" unless myReverse([1,2,3,4]) == [4,3,2,1] && myReverse([1,2,3,4,5]) == [5,4,3,2,1]
 
 #P06 (*) Find out whether a list is a palindrome.
 #A palindrome can be read forward or backward; e.g. [x,a,m,a,x].
-
 def palindrome? list
 	#list == list.reverse
 	
 	#or in a typical haskell way
-	return true if list == nil || list.length == 1 || list.length == 0 
+	return true if list.nil? || list.length == 1 || list.length == 0
 	return true if (list.first == list.last) && palindrome?(list.slice(1, list.length - 2))
 end
 
@@ -92,11 +93,13 @@ def my_flatten list
 		[]
 	else
 		if list[0].kind_of?(Array)
-			return my_flatten(list[0]).concat(my_flatten(list.drop(1))) 
+			return my_flatten(list[0]).concat(my_flatten(list.drop(1)))
 		else
 			return my_flatten(list.drop(1)).insert(0, list[0])
-		end	
-	end	
+		end
+  end
+
+  # Array#flatten can take an argument as the level of recursion to flatten.
 end
 
 raise "myFlatten method error" unless my_flatten([1,[2,3],[4,[5]]]) == [1,2,3,4,5] 
@@ -109,10 +112,9 @@ raise "myFlatten method error" unless my_flatten([1,[2,3],[4,[5]]]) == [1,2,3,4,
 
 def compress list
 	return list if list == nil || list.length == 0 || list.length == 1
-	i = 0;
+	i = 0
 	i += 1 while list[i] == list[i+1] && i <= list.length - 1
-	return compress(list.drop(i + 1)).insert(0, list[i])
-	
+	compress(list.drop(i + 1)).insert(0, list[i])
 end
 
 raise "compress method error" unless compress([1,1,1,2]) == [1,2] && compress([1,1,1,2,2,3,3,4]) == [1,2,3,4]
@@ -124,7 +126,7 @@ raise "compress method error" unless compress([1,1,1,2]) == [1,2] && compress([1
 #X = [[a,a,a,a],[b],[c,c],[a,a],[d],[e,e,e,e]]
 
 def pack list
-	#imperative way is more straightfoward
+	#imperative way is more straightforward
 	return list if list == nil || list.length == 0 || list.length == 1
 	rtn = []
 	i = 0
@@ -161,17 +163,17 @@ def length_encode list
 	i = 0
 	while i <= list.length - 1
 		entry = []
-		runLength = 1
+		run_length = 1
 		while list[i] == list[i+1] && i < list.length - 1
 			i += 1
-			runLength += 1
+			run_length += 1
 		end
-		entry.push(runLength)
+		entry.push(run_length)
 		entry.push(list[i])
 		rtn.push(entry)
 		i += 1
 	end
-	return rtn
+	rtn
 end
 
 raise "length_encode method error" unless length_encode([1,1,2,2,3]) == [[2,1],[2,2],[1,3]]
@@ -190,21 +192,21 @@ def modify_length_encode list
 	i = 0 # how to eliminate while loop
 	while i <= list.length - 1
 		entry = []
-		runLength = 1
+		run_length = 1
 		while list[i] == list[i+1] && i < list.length - 1
 			i += 1
-			runLength += 1
+			run_length += 1
 		end
-		if runLength == 1
+		if run_length == 1
 			rtn.push(list[i])
 		else	
-			entry.push(runLength)
+			entry.push(run_length)
 			entry.push(list[i])
 			rtn.push(entry)
 		end
 		i += 1
 	end
-	return rtn
+	rtn
 end
 
 raise "modify_length_encode method error" unless modify_length_encode([1,1,2,2,3,3,3,4,5]) == [[2,1],[2,2],[3,3],4,5]
@@ -224,7 +226,7 @@ def decode_length_encode list
 		end
 	end
 	
-	return rtn
+	rtn
 end
 
 raise "decode_length_encode method error" unless decode_length_encode([[2,1],[2,2],[3,3],4,5]) == [1,1,2,2,3,3,3,4,5]
@@ -242,14 +244,14 @@ raise "decode_length_encode method error" unless decode_length_encode([[2,1],[2,
 #?- dupli([a,b,c,c,d],X).
 #X = [a,a,b,b,c,c,c,c,d,d]
 
-def duplicate list
+def dupli list
 	return list if list == nil || list.length == 0
 	rtn = []
 	list.each {|n| rtn.push(n).push(n)}
 	rtn
 end
 
-raise "duplicate method error" unless duplicate([1,2]) == [1,1,2,2]
+raise "duplicate method error" unless dupli([1,2]) == [1,1,2,2]
 
 #P15 (**) Duplicate the elements of a list a given number of times.
 #Example:
@@ -309,7 +311,7 @@ def is_prime num
 	return false if num < 2
 	return true if num == 2 || num == 3
 	return false if num % 2 == 0
-	#Çî¾Ù·¨£¬¶Ô3ºÍ¸ùºÅnumµÄÖ®ÄÚµÄÊý£¬¶¼²»ÄÜ³ý¾¡£¬ÔòÊÇÖÊÊý
+  #ç©·ä¸¾æ³•ï¼Œå¯¹3å’Œæ ¹å·numçš„ä¹‹å†…çš„æ•°ï¼Œéƒ½ä¸èƒ½é™¤å°½ï¼Œåˆ™æ˜¯è´¨æ•°
 	divider = 3
 	while divider <= Math.sqrt(num)
 		return false if (num % divider) == 0
@@ -344,7 +346,7 @@ def gcd a, b
 	until (a % b) == 0 
 		a, b = b, (a % b)
 	end
-	return b
+	b
 end
 
 raise "gcd method error" unless gcd(3, 2999) == 1
@@ -354,12 +356,12 @@ raise "gcd method error" unless gcd(3, 2999) == 1
 #Example:
 #?- coprime(35, 64).
 #Yes
-def is_comprime a,b
+def is_coprime a,b
 	return true if gcd(a, b) == 1
 	return false
 end
 
-raise "is_comprime method error" unless is_comprime 3, 2999
+raise "is_comprime method error" unless is_coprime 3, 2999
 
 #P34 (**) Calculate Euler's totient function phi(m).
 #Euler's so-called totient function phi(m) is defined as the number of positive integers r (1 <= r < m) that are coprime to m.
